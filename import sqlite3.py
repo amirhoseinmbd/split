@@ -10,7 +10,6 @@ money REAL   NOT NULL
     '''
 
     def __init__(self):
-        self._list = []
         self.con = sqlite3.connect('split.db')
         self.cur = self.con.cursor()
         self.cur.execute(self.table)
@@ -22,20 +21,21 @@ money REAL   NOT NULL
 
     
     def enter_tarakonesh(self):
-        while True:
+        while (insert := input('Do you want to insert transaction : ') != 'no'):
             print(id := len(self.cur.execute('SELECT * FROM split_table').fetchall())+1) 
             self.id = id
             self.payer = input('Enter name of the payer : ')
             self.cost = float(input('Enter the cost : ')) 
             self.contribute = int(input('Enter the number of person evolve :  '))
             self.portion = self.cost / self.contribute
-
-            self.cur.execute('INSERT INTO split_table VALUES (?,?,?)',(self.id, self.payer, self.portion * (self.contribute-1)))
+            Split.enter_check_payer(self)
+            
 
             for i in range (self.contribute-1):
                 self.id += 1
                 self.person = input('Enter the name : ')
-                self.cur.execute('INSERT INTO split_table VALUES (?,?,?)',(self.id, self.person, -(self.portion)))
+                Split.enter_check_debtor(self)
+
             if (qestion := input("continue yes/no ? ")) != 'no':...
             else:
                 break
@@ -48,6 +48,23 @@ money REAL   NOT NULL
                 print(row)
 
 
-    def create_group(self):...
+    def enter_check_payer(self):
+        exist = self.cur.execute('SELECT id,money FROM split_table WHERE name = ? ',(self.payer,)).fetchone()
+        
+        if exist : 
+            updated_money = exist[1] + (self.portion * (self.contribute-1))
+            self.cur.execute('UPDATE split_table SET money = ? WHERE id = ? ',(updated_money,exist[0]))
+
+        else : self.cur.execute('INSERT INTO split_table VALUES (?,?,?)',(self.id, self.payer, self.portion * (self.contribute-1)))
+
+
+    def enter_check_debtor(self):
+        exist = self.cur.execute('SELECT id,money FROM split_table WHERE name = ? ',(self.person,)).fetchone()
+        
+        if exist : 
+            updated_money = exist[1] + (-(self.portion))
+            self.cur.execute('UPDATE split_table SET money = ? WHERE id = ? ',(updated_money,exist[0]))
+
+        else : self.cur.execute('INSERT INTO split_table VALUES (?,?,?)',(self.id, self.person, -(self.portion)))
 
 Split()
