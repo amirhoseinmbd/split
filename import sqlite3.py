@@ -13,8 +13,8 @@ money REAL   NOT NULL
         self.con = sqlite3.connect('split.db')
         self.cur = self.con.cursor()
         self.cur.execute(self.table)
-        Split.enter_tarakonesh(self)
-        Split.show_data(self)
+        self.enter_tarakonesh()
+        self.show_data()
         self.con.commit() 
         self.con.close()
         
@@ -28,13 +28,13 @@ money REAL   NOT NULL
             self.cost = float(input('Enter the cost : ')) 
             self.contribute = int(input('Enter the number of person evolve :  '))
             self.portion = self.cost / self.contribute
-            Split.enter_check_payer(self)
+            self.enter_check_payer()
             
 
             for i in range (self.contribute-1):
                 self.id += 1
                 self.person = input('Enter the name : ')
-                Split.enter_check_debtor(self)
+                self.enter_check_debtor()
 
             if (qestion := input("continue yes/no ? ")) != 'no':...
             else:
