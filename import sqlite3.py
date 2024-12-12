@@ -13,8 +13,9 @@ money REAL   NOT NULL
         self.con = sqlite3.connect('split.db')
         self.cur = self.con.cursor()
         self.cur.execute(self.table)
-        self.enter_tarakonesh()
-        self.show_data()
+        # self.enter_tarakonesh()
+        # self.show_data()
+        self.debtor_payer_list()
         
         
 
@@ -67,15 +68,32 @@ money REAL   NOT NULL
         else : self.cur.execute('INSERT INTO split_table VALUES (?,?,?)',(self.id, self.person, -(self.portion)))
 
     def debtor_payer_list(self):
-        payer_list = self.cur.execute('SELECT name,money FROM split_table WHERE money > 0').fetchall()
-        # sorted_payer = sorted(payer_list, key=lambda x: x[1])
-        # payer_list.sort(key = lambda x : x[1])
-        debtor_list = self.cur.execute('SELECT name,money FROM split_table WHERE money < 0').fetchall()
-        # debtor_list.sort(key = lambda x : x[1])
+        self.payer_list = self.cur.execute('SELECT name,money FROM split_table WHERE money > 0').fetchall()
+        self.payer_list.sort(key = lambda x : x[1], reverse=True)
 
-        # sorted_debtor = sorted(debtor_list, key=lambda x: x[1])
-        print(payer_list)
-        print(debtor_list)
+        self.debtor_list = self.cur.execute('SELECT name,money FROM split_table WHERE money < 0').fetchall()
+        self.debtor_list.sort(key = lambda x : x[1])
+        print(self.payer_list)
+        print(self.debtor_list)
+
+    def balance(self): 
+        for person_payer in self.payer_list: 
+            self.money_payer = person_payer[1] 
+
+            for person_debtor in self.debtor_list: 
+                self.money_debtor = person_debtor[1]
+
+                if self.money_payer == -(self.money_debtor) :
+                    # p = self.payer_list.index(money)
+                    # print(f"p is {p}")
+                    # d = self.debtor_list.index(money)
+                    # print(f"d is {d}")
+                    print(f"{person_debtor[0]} to {person_payer[0]} : {self.money_payer}")
+                    break
+
+
+
+
 
     def end(self):
         self.con.commit() 
@@ -84,5 +102,8 @@ money REAL   NOT NULL
 
 
 amirSplit = Split()
-amirSplit.debtor_payer_list()
+
+# amirSplit.enter_tarakonesh()
+amirSplit.show_data()
+# amirSplit.balance()
 amirSplit.end()
