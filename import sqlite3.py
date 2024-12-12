@@ -15,8 +15,7 @@ money REAL   NOT NULL
         self.cur.execute(self.table)
         self.enter_tarakonesh()
         self.show_data()
-        self.con.commit() 
-        self.con.close()
+        
         
 
     
@@ -67,4 +66,23 @@ money REAL   NOT NULL
 
         else : self.cur.execute('INSERT INTO split_table VALUES (?,?,?)',(self.id, self.person, -(self.portion)))
 
-Split()
+    def debtor_payer_list(self):
+        payer_list = self.cur.execute('SELECT name,money FROM split_table WHERE money > 0').fetchall()
+        # sorted_payer = sorted(payer_list, key=lambda x: x[1])
+        # payer_list.sort(key = lambda x : x[1])
+        debtor_list = self.cur.execute('SELECT name,money FROM split_table WHERE money < 0').fetchall()
+        # debtor_list.sort(key = lambda x : x[1])
+
+        # sorted_debtor = sorted(debtor_list, key=lambda x: x[1])
+        print(payer_list)
+        print(debtor_list)
+
+    def end(self):
+        self.con.commit() 
+        self.con.close()
+
+
+
+amirSplit = Split()
+amirSplit.debtor_payer_list()
+amirSplit.end()
