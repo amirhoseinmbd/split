@@ -77,19 +77,49 @@ money REAL   NOT NULL
         print(self.debtor_list)
 
     def balance(self): 
-        for person_payer in self.payer_list: 
-            self.money_payer = person_payer[1] 
+        # while True:
+        for m in range (10):
+            for i in range(len(self.payer_list)) : 
+                money_payer = self.payer_list[i][1]
+                if money_payer == 0 :
+                    print(f'{self.money_payer[i][0]} is balanced. ')
+                    self.payer_list.pop(i)
 
-            for person_debtor in self.debtor_list: 
-                self.money_debtor = person_debtor[1]
+            for j in range(len(self.debtor_list)) : 
+                money_debtor = self.debtor_list[j][1]
+                if money_debtor == 0 :
+                    print(f'{self.money_debtor[j][0]} is balanced. ')
+                    self.debtor_list.pop(j)
 
-                if self.money_payer == -(self.money_debtor) :
-                    # p = self.payer_list.index(money)
-                    # print(f"p is {p}")
-                    # d = self.debtor_list.index(money)
-                    # print(f"d is {d}")
-                    print(f"{person_debtor[0]} to {person_payer[0]} : {self.money_payer}")
-                    break
+                      
+            # for person_payer in self.payer_list: 
+            #     self.money_payer = person_payer[1] 
+
+            #     for person_debtor in self.debtor_list: 
+            #         self.money_debtor = person_debtor[1]
+
+            #         if self.money_payer == -(self.money_debtor) :
+            #             person_payer[1] = 0
+            #             person_debtor[1] = 0
+            #             print(f"{person_debtor[0]} to {person_payer[0]} : {self.money_payer}")
+
+
+
+        
+                    
+
+    def pardakht(self):
+        who_pay = input('Enter the payer : ')
+        who_recieve = input('enter the reciever : ')
+        amount = float(input('Enter the money : '))
+
+        who_pay_money = self.cur.execute('SELECT money FROM split_table WHERE name = ? ',(who_pay,)).fetchone()
+        who_recieve_money = self.cur.execute('SELECT money FROM split_table WHERE name = ? ',(who_recieve,)).fetchone()
+        print(who_pay_money)
+        print(who_recieve_money)
+
+        self.cur.execute('UPDATE split_table SET money = ? WHERE name = ? ',((who_pay_money[0]+amount),who_pay))
+        self.cur.execute('UPDATE split_table SET money = ? WHERE name = ? ',((who_recieve_money[0]-amount),who_recieve))
 
 
 
@@ -104,6 +134,7 @@ money REAL   NOT NULL
 amirSplit = Split()
 
 # amirSplit.enter_tarakonesh()
+amirSplit.balance()
+# amirSplit.pardakht()
 amirSplit.show_data()
-# amirSplit.balance()
 amirSplit.end()
