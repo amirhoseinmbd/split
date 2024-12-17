@@ -1,4 +1,5 @@
 import sqlite3
+from datetime import date
 
 class Split :
     table = ''' 
@@ -7,13 +8,25 @@ id  INT PRIMARY KEY NOT NULL,
 name  TEXT   NOT NULL,
 money REAL   NOT NULL
 )
-    '''
+'''
 
+    table2 = '''
+CREATE TABLE IF NOT EXISTS history_table (
+Payer TEXT  NOT NULL,
+Cost   REAL   NOT NULL,
+Date  TEXT    NOT NULL,
+Debtor  TEXT   NOT NULL,
+Describtion TEXT  
+)
+
+'''
+    
 
     def __init__(self):
         self.con = sqlite3.connect('split.db')
         self.cur = self.con.cursor()
         self.cur.execute(self.table)
+        self.cur.execute(self.table2)
         self.debtor_payer_list()
         # self.enter_tarakonesh()
         # self.show_data()
@@ -26,14 +39,21 @@ money REAL   NOT NULL
                 self.payer = input('Enter name of the payer : ')
                 self.cost = float(input('Enter the cost : ')) 
                 self.contribute = int(input('Enter the number of person evolve :  '))
+                self.describe = input('Description : ...')
                 self.portion = self.cost / self.contribute
                 self.enter_check_payer()
                     
-
+                self.all = []
                 for i in range (self.contribute-1):
                     self.id += 1
                     self.person = input('Enter the name : ')
+                    self.all.append(self.person)
                     self.enter_check_debtor()
+
+                print(self.all)
+                self.allStr = ' , '.join(self.all)
+                print(self.allStr)
+                self.history()
 
             
             except ValueError : 
@@ -74,8 +94,7 @@ money REAL   NOT NULL
 
         self.debtor_list = self.cur.execute('SELECT name,money FROM split_table WHERE money < 0').fetchall()
         self.debtor_list.sort(key = lambda x : x[1])
-        print(f'payer list is : {self.payer_list}\n ___________________________________________')
-        print(f'debtor list is : {self.debtor_list}\n ___________________________________________')
+        
 
 
     def balance(self):
@@ -127,16 +146,6 @@ money REAL   NOT NULL
                     self.debtor_list.sort(key = lambda x : x[1])
                     
 
-
-
-
-
-            
-
-
-
-
-
     def pardakht(self):
         who_pay = input('Enter the payer : ')
         who_recieve = input('enter the reciever : ')
@@ -148,6 +157,23 @@ money REAL   NOT NULL
         self.cur.execute('UPDATE split_table SET money = ? WHERE name = ? ',((who_pay_money[0]+amount),who_pay))
         self.cur.execute('UPDATE split_table SET money = ? WHERE name = ? ',((who_recieve_money[0]-amount),who_recieve))
 
+    def history(self):
+        self.date = date.today()
+        self.record_history = (self.payer, self.cost,self.date, self.allStr, self.describe)
+        self.cur.execute('INSERT INTO history_table VALUES (?,?,?,?,?)',(self.record_history))
+
+    def show_history(self):
+        self.cur.row_factory = sqlite3.Row
+        r = self.cur.execute('SELECT * FROM history_table')
+        rows = r.fetchall()
+
+        headers = [description[0] for description in self.cur.description]
+        print(" | ".join(headers)) 
+        
+        for row in rows:
+            print(' | ' .join(str(row[x]) for x in headers))
+        
+         
 
     def end(self):
         self.con.commit() 
@@ -161,9 +187,10 @@ money REAL   NOT NULL
 
 
 amirSplit = Split()
-# amirSplit.enter_tarakonesh()
+amirSplit.enter_tarakonesh()
+# amirSplit.balance()
 
-amirSplit.balance()
 # amirSplit.pardakht()
 # amirSplit.show_data()
+amirSplit.show_history()
 amirSplit.end()
