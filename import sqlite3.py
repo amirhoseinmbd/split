@@ -137,7 +137,7 @@ Describtion TEXT
 
                     elif self.payer_list[0][1] > -(self.debtor_list[0][1]): 
                         print(f"{self.debtor_list[0][0]} to {self.payer_list[0][0]} : {-(self.debtor_list[0][1])}")
-                        remain = self.payer_list[0][1] - self.debtor_list[0][1]
+                        remain = self.payer_list[0][1] + self.debtor_list[0][1]
                         self.payer_list.append((self.payer_list[0][0],remain))
                         self.debtor_list.pop(0)
                         self.payer_list.pop(0)
@@ -187,9 +187,8 @@ Describtion TEXT
 
 
 amirSplit = Split()
-amirSplit.enter_tarakonesh()
+# amirSplit.enter_tarakonesh()
 # amirSplit.balance()
-
 # amirSplit.pardakht()
 # amirSplit.show_data()
 amirSplit.show_history()
